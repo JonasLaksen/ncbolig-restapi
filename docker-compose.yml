@@ -1,0 +1,30 @@
+version: '3.4'
+services:
+    restapi:
+       container_name: restapi-ctr
+       build: 
+         context: ./restapi/
+         target: prod
+       ports:
+       - "8080:8080"
+       volumes:
+       - ./logs:/logs
+       networks:
+       - back
+       depends_on:
+       - pg
+    pg:
+       container_name: pg-ctr
+       build:
+         context: ./postgres/
+       ports: 
+         - "5432:5432"
+       volumes:
+       - ./logs:/logs
+       - ./postgres/data:/var/lib/postgresql/data
+       command: -c logging_collector=on -c log_directory=/logs -c log_filename=postgresql.log -c log_statement=all
+       networks:
+       - back
+networks:
+    back:
+      driver: bridge
